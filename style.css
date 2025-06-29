@@ -1,61 +1,96 @@
 body {
-    font-family: Arial, sans-serif;
-    background: #f7f7fa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #e0e7ff 0%, #f7f7fa 100%);
     margin: 0;
     padding: 0;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 h1 {
-    margin-top: 30px;
-    color: #333;
+    margin-top: 40px;
+    color: #2a3a5e;
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 8px rgba(80, 80, 160, 0.08);
 }
 
 section {
     background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    padding: 24px 32px;
-    margin: 20px 0;
-    min-width: 320px;
+    border-radius: 18px;
+    box-shadow: 0 6px 32px rgba(60, 80, 160, 0.10);
+    padding: 32px 40px;
+    margin: 28px 0;
+    min-width: 340px;
+    min-height: 0;
+    transition: box-shadow 0.2s;
+}
+
+section:empty {
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
 }
 
 #inputs input {
-    margin: 8px 8px 8px 0;
-    padding: 8px;
-    border: 1px solid #bbb;
-    border-radius: 4px;
-    font-size: 1em;
+    margin: 10px 12px 10px 0;
+    padding: 12px 14px;
+    border: 1.5px solid #bfcfff;
+    border-radius: 7px;
+    font-size: 1.1em;
+    background: #f5f8ff;
+    transition: border 0.2s;
+}
+#inputs input:focus {
+    border: 1.5px solid #4f8cff;
+    outline: none;
+    background: #eaf1ff;
 }
 
 #gameController label {
-    margin-right: 8px;
-    font-weight: bold;
+    margin-right: 10px;
+    font-weight: 600;
+    color: #2a3a5e;
+    font-size: 1.1em;
 }
 
 #gameController select {
-    margin-right: 12px;
-    padding: 6px;
-    border-radius: 4px;
-    border: 1px solid #bbb;
+    margin-right: 16px;
+    padding: 8px 12px;
+    border-radius: 7px;
+    border: 1.5px solid #bfcfff;
+    background: #f5f8ff;
+    font-size: 1em;
+    transition: border 0.2s;
+}
+#gameController select:focus {
+    border: 1.5px solid #4f8cff;
+    outline: none;
+    background: #eaf1ff;
 }
 
 #gameController button {
-    margin: 0 6px;
-    padding: 8px 16px;
+    margin: 0 8px;
+    padding: 10px 24px;
     border: none;
-    border-radius: 4px;
-    background: #4f8cff;
+    border-radius: 7px;
+    background: linear-gradient(90deg, #4f8cff 60%, #6e9fff 100%);
     color: #fff;
-    font-size: 1em;
+    font-size: 1.1em;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    box-shadow: 0 2px 8px rgba(80, 120, 255, 0.10);
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
 }
-
 #gameController button:hover {
-    background: #3466c2;
+    background: linear-gradient(90deg, #3466c2 60%, #4f8cff 100%);
+    box-shadow: 0 4px 16px rgba(80, 120, 255, 0.18);
+    transform: translateY(-2px) scale(1.04);
 }
 
 .hide,
@@ -66,24 +101,125 @@ section {
 #difficultyContainer {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     margin-right: 8px;
 }
 
 #loader {
-    margin-top: 18px;
+    margin-top: 22px;
     text-align: center;
-    font-size: 1.1em;
+    font-size: 1.15em;
     color: #4f8cff;
     font-weight: bold;
+    letter-spacing: 1px;
 }
 
+#questions {
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
 
+#questions > div, #questions > h2, #questions > p {
+    margin-bottom: 18px;
+}
 
-#loader {
-    margin-top: 18px;
-    text-align: center;
-    font-size: 1.1em;
-    color: #4f8cff;
+#questions button {
+    padding: 12px 0;
+    border-radius: 7px;
+    border: 1.5px solid #bfcfff;
+    background: #f5f8ff;
+    color: #2a3a5e;
+    font-size: 1.08em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.18s, border 0.18s, color 0.18s, transform 0.1s;
+    margin-bottom: 8px;
+}
+#questions button:hover:not(:disabled) {
+    background: #eaf1ff;
+    border: 1.5px solid #4f8cff;
+    color: #3466c2;
+    transform: scale(1.03);
+}
+#questions button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+#questions #timer {
+    margin-top: 22px;
+    font-size: 1.15em;
     font-weight: bold;
+    color: #3466c2;
+    background: #eaf1ff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    display: inline-block;
+    min-width: 160px;
+    text-align: center;
+    transition: background 0.2s, color 0.2s;
+}
+
+#questions #timer.red {
+    color: #d43c3c;
+    background: #fff0f0;
+}
+
+#questions .correct {
+    background: #b6f7b0 !important;
+    border-color: #3bb143 !important;
+    color: #1b3e1b !important;
+}
+#questions .incorrect {
+    background: #ffb6b6 !important;
+    border-color: #d43c3c !important;
+    color: #7a2323 !important;
+}
+
+#questions h2 {
+    color: #2a3a5e;
+    font-size: 2rem;
+    margin-bottom: 18px;
+}
+
+#questions p {
+    color: #3c4a6b;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+#questions button#restartSame,
+#questions button#restartConfig,
+#questions button#finishApp {
+    background: linear-gradient(90deg, #4f8cff 60%, #6e9fff 100%);
+    color: #fff;
+    border: none;
+    margin-top: 8px;
+    font-size: 1.08em;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(80, 120, 255, 0.10);
+}
+#questions button#restartSame:hover,
+#questions button#restartConfig:hover,
+#questions button#finishApp:hover {
+    background: linear-gradient(90deg, #3466c2 60%, #4f8cff 100%);
+    color: #fff;
+    transform: scale(1.04);
+}
+
+@media (max-width: 600px) {
+    section {
+        padding: 18px 8px;
+        min-width: 0;
+    }
+    #questions {
+        padding: 0 !important;
+    }
+    h1 {
+        font-size: 1.5rem;
+    }
 }
