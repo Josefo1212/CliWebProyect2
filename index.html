@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Trivia</title>
+</head>
+<body>
+    <h1>Trivia</h1>
+<section id="inputs">
+    <div>
+        <input type="text" id="namePlayer" placeholder="Nombre de jugador" required>
+        <input type="number" id="numberQuestions" placeholder="Numero de preguntas" required>
+    </div>
+</section>
+<section id="gameController">
+    <div id="difficultyContainer">
+        <label for="difficulty">Escoger dificultad:</label>
+        <select name="dificultad" id="difficulty">
+            <option value="facil">easy</option>
+            <option value="media">medium</option>
+            <option value="dificil">hard</option>
+        </select>
+        <button id="startGame">Iniciar Juego</button>
+        <button id="endGame" class="hide">Terminar Juego</button>
+    </div>
+    <div id="loader" class="hidden">Cargando preguntas...</div>
+</section>
+<section id="questions"></section>
+    <script src="./index.js"></script>
+</body>
+</html>
