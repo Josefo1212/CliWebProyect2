@@ -1,6 +1,12 @@
 import { decodeHtml } from './utils.js';
 
+/**
+ * Componente para mostrar y controlar una pregunta de trivia.
+ */
 export class QuestionComponent {
+    /**
+     * @param {Object} params - Parámetros para inicializar el componente.
+     */
     constructor({ index, triviaData, score, correctCount, incorrectCount, totalTime, namePlayer, questions, onNext }) {
         this.index = index;
         this.triviaData = triviaData;
@@ -16,9 +22,17 @@ export class QuestionComponent {
         this.questionStartTime = 0;
     }
 
+    /**
+     * Renderiza la pregunta actual y sus opciones.
+     */
     render() {
         clearInterval(this.timer);
         this.questions.innerHTML = '';
+        // Efecto fade-in
+        this.questions.style.opacity = '0';
+        setTimeout(() => { this.questions.style.opacity = '1'; }, 50);
+
+        // Si no hay más preguntas, llama a onNext para mostrar resultados
         if (this.index >= this.triviaData.length) {
             this.onNext({
                 currentQuestion: this.index,
@@ -29,8 +43,10 @@ export class QuestionComponent {
             });
             return;
         }
+
         this.questionStartTime = Date.now();
         const q = this.triviaData[this.index];
+        // Mezcla las respuestas
         const answers = [...q.incorrect_answers, q.correct_answer]
             .map(decodeHtml)
             .sort(() => Math.random() - 0.5);
@@ -46,7 +62,7 @@ export class QuestionComponent {
         scoreDiv.textContent = `Puntuación: ${this.score} | Correctas: ${this.correctCount} | Incorrectas: ${this.incorrectCount}`;
         scoreDiv.style.marginBottom = '10px';
         scoreDiv.style.fontSize = '1em';
-        scoreDiv.style.color = '#3466c2';
+        scoreDiv.style.color = '#bfa046';
         this.questions.appendChild(scoreDiv);
 
         // Pregunta
@@ -56,7 +72,7 @@ export class QuestionComponent {
         questionText.style.marginBottom = '16px';
         this.questions.appendChild(questionText);
 
-        // Opciones
+        // Opciones de respuesta
         const optionsDiv = document.createElement('div');
         optionsDiv.style.display = 'flex';
         optionsDiv.style.flexDirection = 'column';
@@ -75,19 +91,33 @@ export class QuestionComponent {
         });
         this.questions.appendChild(optionsDiv);
 
-        // Temporizador
+        // Barra de salud (timer visual)
         const timerDiv = document.createElement('div');
         timerDiv.id = 'timer';
         timerDiv.style.marginTop = '18px';
         timerDiv.style.fontWeight = 'bold';
-        timerDiv.style.color = '#3466c2';
+        timerDiv.style.color = '#fff';
+
+        // Fondo de la barra de salud
+        const healthBg = document.createElement('div');
+        healthBg.className = 'health-bar-bg';
+        const healthBar = document.createElement('div');
+        healthBar.className = 'health-bar';
+        healthBg.appendChild(healthBar);
+        timerDiv.appendChild(healthBg);
+
+        // Etiqueta del timer
+        const timerLabel = document.createElement('span');
+        timerLabel.className = 'timer-label';
+        timerDiv.appendChild(timerLabel);
         this.questions.appendChild(timerDiv);
 
+        // Inicializa el timer
         this.timeLeft = 20;
-        this.updateTimerDisplay(timerDiv, this.timeLeft);
+        this.updateTimerDisplay(timerLabel, healthBar, this.timeLeft);
         this.timer = setInterval(() => {
             this.timeLeft--;
-            this.updateTimerDisplay(timerDiv, this.timeLeft);
+            this.updateTimerDisplay(timerLabel, healthBar, this.timeLeft);
             if (this.timeLeft <= 0) {
                 clearInterval(this.timer);
                 this.handleTimeout(decodeHtml(q.correct_answer));
@@ -95,22 +125,20 @@ export class QuestionComponent {
         }, 1000);
     }
 
-    updateTimerDisplay(timerDiv, seconds) {
-        timerDiv.textContent = `Tiempo restante: ${seconds}s`;
-        if (seconds <= 5) {
-            timerDiv.style.color = '#d43c3c';
-            timerDiv.style.background = '#fff0f0';
-            timerDiv.style.padding = '6px 10px';
-            timerDiv.style.borderRadius = '6px';
-            timerDiv.style.transition = 'background 0.2s, color 0.2s';
-        } else {
-            timerDiv.style.color = '#3466c2';
-            timerDiv.style.background = 'transparent';
-            timerDiv.style.padding = '';
-            timerDiv.style.borderRadius = '';
-        }
+    /**
+     * Actualiza la barra de salud y el texto del timer.
+     */
+    updateTimerDisplay(timerLabel, healthBar, seconds) {
+        timerLabel.textContent = `Vitalidad: ${seconds}s`;
+        healthBar.style.width = (seconds * 5) + '%';
+        healthBar.style.background = seconds <= 5
+            ? 'linear-gradient(90deg, #d72631 0%, #bfa046 100%)'
+            : 'linear-gradient(90deg, #bfa046 0%, #d72631 100%)';
     }
 
+    /**
+     * Maneja la selección de una respuesta.
+     */
     handleAnswer(btn, selected, correct) {
         clearInterval(this.timer);
         const allBtns = this.questions.querySelectorAll('button');
@@ -149,12 +177,18 @@ export class QuestionComponent {
         }, 1200);
     }
 
+    /**
+     * Maneja el caso en que se acaba el tiempo para responder.
+     */
     handleTimeout(correct) {
         let newIncorrect = this.incorrectCount + 1;
         let newTotalTime = this.totalTime + 20;
         this.showFeedback(null, correct, newIncorrect, newTotalTime);
     }
 
+    /**
+     * Muestra el feedback visual tras una respuesta incorrecta o timeout.
+     */
     showFeedback(selected, correct, newIncorrect, newTotalTime) {
         const allBtns = this.questions.querySelectorAll('button');
         allBtns.forEach(b => {
@@ -178,3 +212,4 @@ export class QuestionComponent {
         }, 1200);
     }
 }
+

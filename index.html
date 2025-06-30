@@ -7,7 +7,8 @@
     <title>Trivia</title>
 </head>
 <body>
-    <h1>Trivia</h1>
+    <canvas id="ash-canvas"></canvas>
+    <h1>TRIVIA</h1>
     <section id="inputs">
         <div>
             <input type="text" id="namePlayer" placeholder="Nombre de jugador" required>
@@ -18,16 +19,20 @@
         <div id="difficultyContainer">
             <label for="difficulty">Escoger dificultad:</label>
             <select name="dificultad" id="difficulty">
-                <option value="facil">easy</option>
-                <option value="media">medium</option>
-                <option value="dificil">hard</option>
+                <option value="facil">Fácil</option>
+                <option value="media">Media</option>
+                <option value="dificil">Difícil</option>
             </select>
-            <button id="startGame">Iniciar Juego</button>
+            <button id="startGame" type="button">Iniciar Juego</button>
             <button id="endGame" class="hide">Terminar Juego</button>
         </div>
         <div id="loader" class="hidden">Cargando preguntas...</div>
     </div>
-    <section id="questions"></section>
-    <script type="module" src="./index.js"></script>
+<div id="swordsLoader" class="hidden">
+  <img src="./espadas-Kratos.png" alt="Espadas cruzadas girando" />
+</div>   
+ <section id="questions"></section>
+ <script type="module" src="./index.js"></script>
+
 </body>
 </html>

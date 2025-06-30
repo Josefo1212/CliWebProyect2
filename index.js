@@ -8,6 +8,7 @@ const btnStart = document.getElementById('startGame');
 const inputsSection = document.getElementById('inputs');
 const questions = document.getElementById('questions');
 const loader = document.getElementById('loader');
+const swordsLoader = document.getElementById('swordsLoader');
 const difficultyContainer = document.getElementById('difficultyContainer');
 
 let triviaData = [];
@@ -27,11 +28,17 @@ function fetchQuestions(amount, difficulty) {
 }
 
 function startGameWithConfig(num, difficulty) {
-    loader.classList.remove('hidden');
+    swordsLoader.classList.remove('hidden');
+    loader.classList.add('hidden');
     inputsSection.classList.add('hidden');
     difficultyContainer.classList.add('hidden');
-    fetchQuestions(num, difficulty).then(data => {
+    // Espera al menos 1.5 segundos aunque la API responda rápido
+    Promise.all([
+        fetchQuestions(num, difficulty),
+        new Promise(res => setTimeout(res, 1500))
+    ]).then(([data]) => {
         triviaData = data;
+        swordsLoader.classList.add('hidden');
         loader.classList.add('hidden');
         currentQuestion = 0;
         score = 0;
@@ -40,6 +47,7 @@ function startGameWithConfig(num, difficulty) {
         totalTime = 0;
         renderQuestion();
     }).catch(() => {
+        swordsLoader.classList.add('hidden');
         loader.classList.add('hidden');
         alert('Error al obtener preguntas. Intenta de nuevo.');
         inputsSection.classList.remove('hidden');
@@ -48,6 +56,9 @@ function startGameWithConfig(num, difficulty) {
 }
 
 function renderQuestion() {
+    // Oculta ambos loaders antes de mostrar la pregunta
+    swordsLoader.classList.add('hidden');
+    loader.classList.add('hidden');
     const questionComp = new QuestionComponent({
         index: currentQuestion,
         triviaData,
@@ -74,6 +85,9 @@ function renderQuestion() {
 }
 
 function renderResults() {
+    // Oculta ambos loaders antes de mostrar resultados
+    swordsLoader.classList.add('hidden');
+    loader.classList.add('hidden');
     const resultsComp = new ResultsComponent({
         triviaData,
         score,
@@ -89,10 +103,13 @@ function renderResults() {
     resultsComp.render();
 }
 
-btnStart.addEventListener('click', async () => {
+btnStart.addEventListener('click', async (e) => {
+    e.preventDefault();
+
     if (!validarCampos(namePlayer, numberQuestions)) return;
 
-    loader.classList.remove('hidden');
+    swordsLoader.classList.remove('hidden');
+    loader.classList.add('hidden');
     inputsSection.classList.add('hidden');
     difficultyContainer.classList.add('hidden');
 
@@ -100,7 +117,13 @@ btnStart.addEventListener('click', async () => {
     const difficulty = document.getElementById('difficulty').value;
     lastConfig = { num, difficulty };
     try {
-        triviaData = await fetchQuestions(num, difficulty);
+        // Espera al menos 1.5 segundos aunque la API responda rápido
+        const [data] = await Promise.all([
+            fetchQuestions(num, difficulty),
+            new Promise(res => setTimeout(res, 1500))
+        ]);
+        triviaData = data;
+        swordsLoader.classList.add('hidden');
         loader.classList.add('hidden');
         currentQuestion = 0;
         score = 0;
@@ -109,9 +132,65 @@ btnStart.addEventListener('click', async () => {
         totalTime = 0;
         renderQuestion();
     } catch (e) {
+        swordsLoader.classList.add('hidden');
         loader.classList.add('hidden');
         alert('Error al obtener preguntas. Intenta de nuevo.');
         inputsSection.classList.remove('hidden');
         difficultyContainer.classList.remove('hidden');
     }
 });
+
+// Partículas cenizas
+function startAshParticles() {
+    const canvas = document.getElementById('ash-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W = window.innerWidth, H = window.innerHeight;
+    canvas.width = W; canvas.height = H;
+
+    let ashes = [];
+    for (let i = 0; i < 60; i++) {
+        ashes.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: Math.random() * 1.8 + 0.7,
+            d: Math.random() * 1.5 + 0.5,
+            alpha: Math.random() * 0.5 + 0.2
+        });
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+        for (let i = 0; i < ashes.length; i++) {
+            let a = ashes[i];
+            ctx.beginPath();
+            ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2, false);
+            ctx.fillStyle = `rgba(191,160,70,${a.alpha})`;
+            ctx.shadowColor = "#d72631";
+            ctx.shadowBlur = 6;
+            ctx.fill();
+        }
+        update();
+    }
+    function update() {
+        for (let i = 0; i < ashes.length; i++) {
+            let a = ashes[i];
+            a.y += a.d;
+            a.x += Math.sin(a.y / 40) * 0.5;
+            if (a.y > H) {
+                a.y = -10;
+                a.x = Math.random() * W;
+            }
+        }
+    }
+    function animate() {
+        draw();
+        requestAnimationFrame(animate);
+    }
+    animate();
+    window.addEventListener('resize', () => {
+        W = window.innerWidth; H = window.innerHeight;
+        canvas.width = W; canvas.height = H;
+    });
+}
+startAshParticles();
