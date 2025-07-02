@@ -65,7 +65,7 @@ h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
-section {
+.form-container {
     background: rgba(30, 20, 20, 0.92);
     border-radius: 18px;
     box-shadow: 0 6px 32px rgba(80, 20, 20, 0.25);
@@ -76,10 +76,10 @@ section {
     border: none;
     transition: box-shadow 0.2s, border 0.2s;
 }
-section:focus-within, section:hover {
+.form-container:focus-within, .form-container:hover {
     border: none;
 }
-section:empty {
+.form-container:empty {
     background: none !important;
     box-shadow: none !important;
     padding: 0 !important;
@@ -87,6 +87,16 @@ section:empty {
     margin: 0 !important;
     border-radius: 0 !important;
     border: none !important;
+}
+#inputs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#inputs > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 #inputs input {
     margin: 10px 12px 10px 0;
@@ -161,15 +171,6 @@ section:empty {
     gap: 12px;
     margin-right: 8px;
 }
-#loader {
-    margin-top: 22px;
-    text-align: center;
-    font-size: 1.15em;
-    color: #bfa046;
-    font-weight: bold;
-    letter-spacing: 1px;
-    text-shadow: 0 2px 8px #000;
-}
 #questions {
     background: none !important;
     box-shadow: none !important;
@@ -221,6 +222,16 @@ section:empty {
     box-shadow: 0 2px 8px #00000030;
     position: relative;
     overflow: hidden;
+}
+#questions #timer.timer-warning {
+    animation: blink-timer 0.7s steps(2, start) infinite;
+    box-shadow: 0 0 16px #d72631, 0 0 24px #d72631;
+    border: 2px solid #d72631;
+}
+@keyframes blink-timer {
+    0% { background: #2a1a1a; }
+    50% { background: #d72631; color: #fff; }
+    100% { background: #2a1a1a; }
 }
 #questions #timer .health-bar-bg {
     width: 100%;
@@ -288,7 +299,7 @@ section:empty {
     transform: scale(1.04);
 }
 @media (max-width: 600px) {
-    section {
+    .form-container {
         padding: 18px 8px;
         min-width: 0;
     }

@@ -7,9 +7,9 @@ const numberQuestions = document.getElementById('numberQuestions');
 const btnStart = document.getElementById('startGame');
 const inputsSection = document.getElementById('inputs');
 const questions = document.getElementById('questions');
-const loader = document.getElementById('loader');
 const swordsLoader = document.getElementById('swordsLoader');
 const difficultyContainer = document.getElementById('difficultyContainer');
+const categorySelect = document.getElementById('category');
 
 let triviaData = [];
 let currentQuestion = 0;
@@ -19,27 +19,61 @@ let incorrectCount = 0;
 let totalTime = 0;
 let lastConfig = { num: 10, difficulty: 'facil' };
 
-function fetchQuestions(amount, difficulty) {
-    const diffMap = { facil: 'easy', media: 'medium', dificil: 'hard' };
-    const url = `https://opentdb.com/api.php?amount=${amount}&difficulty=${diffMap[difficulty]}&type=multiple`;
-    return fetch(url)
-        .then(res => res.json())
-        .then(data => data.results);
+let apiCategories = [];
+
+async function fetchCategoriesFromAPI() {
+    if (apiCategories.length > 0) return apiCategories;
+    const res = await fetch('https://opentdb.com/api_category.php');
+    const data = await res.json();
+    apiCategories = data.trivia_categories;
+    return apiCategories;
 }
 
-function startGameWithConfig(num, difficulty) {
+async function fillCategorySelect() {
+    const categories = await fetchCategoriesFromAPI();
+    const topCategories = categories.slice(0, 5);
+    // Elimina las opciones previas excepto "Mixtas"
+    while (categorySelect.options.length > 1) {
+        categorySelect.remove(1);
+    }
+    topCategories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.id;
+        opt.textContent = cat.name;
+        categorySelect.appendChild(opt);
+    });
+}
+
+// Llenar categorías al cargar la página
+fillCategorySelect();
+
+function fetchQuestions(amount, difficulty, category) {
+    const diffMap = { facil: 'easy', media: 'medium', dificil: 'hard' };
+    let url = `https://opentdb.com/api.php?amount=${amount}&difficulty=${diffMap[difficulty]}&type=multiple&encode=url3986`;
+    if (category) {
+        url += `&category=${category}`;
+    }
+    return fetch(url)
+        .then(res => res.json())
+        .then(data => data.results.map(q => ({
+            ...q,
+            question: decodeURIComponent(q.question),
+            correct_answer: decodeURIComponent(q.correct_answer),
+            incorrect_answers: q.incorrect_answers.map(ans => decodeURIComponent(ans))
+        })));
+}
+
+function startGameWithConfig(num, difficulty, category) {
     swordsLoader.classList.remove('hidden');
-    loader.classList.add('hidden');
     inputsSection.classList.add('hidden');
     difficultyContainer.classList.add('hidden');
     // Espera al menos 1.5 segundos aunque la API responda rápido
     Promise.all([
-        fetchQuestions(num, difficulty),
+        fetchQuestions(num, difficulty, category),
         new Promise(res => setTimeout(res, 1500))
     ]).then(([data]) => {
         triviaData = data;
         swordsLoader.classList.add('hidden');
-        loader.classList.add('hidden');
         currentQuestion = 0;
         score = 0;
         correctCount = 0;
@@ -48,17 +82,15 @@ function startGameWithConfig(num, difficulty) {
         renderQuestion();
     }).catch(() => {
         swordsLoader.classList.add('hidden');
-        loader.classList.add('hidden');
-        alert('Error al obtener preguntas. Intenta de nuevo.');
+        alert('Error fetching questions. Please try again.');
         inputsSection.classList.remove('hidden');
         difficultyContainer.classList.remove('hidden');
     });
 }
 
 function renderQuestion() {
-    // Oculta ambos loaders antes de mostrar la pregunta
+    // Oculta loader antes de mostrar la pregunta
     swordsLoader.classList.add('hidden');
-    loader.classList.add('hidden');
     const questionComp = new QuestionComponent({
         index: currentQuestion,
         triviaData,
@@ -85,9 +117,8 @@ function renderQuestion() {
 }
 
 function renderResults() {
-    // Oculta ambos loaders antes de mostrar resultados
+    // Oculta loader antes de mostrar resultados
     swordsLoader.classList.add('hidden');
-    loader.classList.add('hidden');
     const resultsComp = new ResultsComponent({
         triviaData,
         score,
@@ -109,22 +140,20 @@ btnStart.addEventListener('click', async (e) => {
     if (!validarCampos(namePlayer, numberQuestions)) return;
 
     swordsLoader.classList.remove('hidden');
-    loader.classList.add('hidden');
     inputsSection.classList.add('hidden');
     difficultyContainer.classList.add('hidden');
 
     const num = parseInt(numberQuestions.value, 10);
     const difficulty = document.getElementById('difficulty').value;
-    lastConfig = { num, difficulty };
+    let category = categorySelect.value;
+    lastConfig = { num, difficulty, category };
     try {
-        // Espera al menos 1.5 segundos aunque la API responda rápido
         const [data] = await Promise.all([
-            fetchQuestions(num, difficulty),
+            fetchQuestions(num, difficulty, category),
             new Promise(res => setTimeout(res, 1500))
         ]);
         triviaData = data;
         swordsLoader.classList.add('hidden');
-        loader.classList.add('hidden');
         currentQuestion = 0;
         score = 0;
         correctCount = 0;
@@ -133,8 +162,7 @@ btnStart.addEventListener('click', async (e) => {
         renderQuestion();
     } catch (e) {
         swordsLoader.classList.add('hidden');
-        loader.classList.add('hidden');
-        alert('Error al obtener preguntas. Intenta de nuevo.');
+        alert('Error fetching questions. Please try again.');
         inputsSection.classList.remove('hidden');
         difficultyContainer.classList.remove('hidden');
     }

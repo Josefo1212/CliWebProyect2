@@ -53,13 +53,13 @@ export class QuestionComponent {
 
         // Progreso
         const progress = document.createElement('div');
-        progress.textContent = `Pregunta ${this.index + 1} de ${this.triviaData.length}`;
+        progress.textContent = `Question ${this.index + 1} of ${this.triviaData.length}`;
         progress.style.marginBottom = '12px';
         this.questions.appendChild(progress);
 
         // Puntuación en tiempo real
         const scoreDiv = document.createElement('div');
-        scoreDiv.textContent = `Puntuación: ${this.score} | Correctas: ${this.correctCount} | Incorrectas: ${this.incorrectCount}`;
+        scoreDiv.textContent = `Score: ${this.score} | Correct: ${this.correctCount} | Incorrect: ${this.incorrectCount}`;
         scoreDiv.style.marginBottom = '10px';
         scoreDiv.style.fontSize = '1em';
         scoreDiv.style.color = '#bfa046';
@@ -114,10 +114,10 @@ export class QuestionComponent {
 
         // Inicializa el timer
         this.timeLeft = 20;
-        this.updateTimerDisplay(timerLabel, healthBar, this.timeLeft);
+        this.updateTimerDisplay(timerLabel, healthBar, this.timeLeft, timerDiv);
         this.timer = setInterval(() => {
             this.timeLeft--;
-            this.updateTimerDisplay(timerLabel, healthBar, this.timeLeft);
+            this.updateTimerDisplay(timerLabel, healthBar, this.timeLeft, timerDiv);
             if (this.timeLeft <= 0) {
                 clearInterval(this.timer);
                 this.handleTimeout(decodeHtml(q.correct_answer));
@@ -127,13 +127,23 @@ export class QuestionComponent {
 
     /**
      * Actualiza la barra de salud y el texto del timer.
+     * Añade efecto visual cuando queden menos de 5 segundos.
      */
-    updateTimerDisplay(timerLabel, healthBar, seconds) {
-        timerLabel.textContent = `Vitalidad: ${seconds}s`;
+    updateTimerDisplay(timerLabel, healthBar, seconds, timerDiv) {
+        timerLabel.textContent = `Vitality: ${seconds}s`;
         healthBar.style.width = (seconds * 5) + '%';
         healthBar.style.background = seconds <= 5
             ? 'linear-gradient(90deg, #d72631 0%, #bfa046 100%)'
             : 'linear-gradient(90deg, #bfa046 0%, #d72631 100%)';
+
+        // Indicador visual especial (parpadeo) cuando queden menos de 5 segundos
+        if (timerDiv) {
+            if (seconds <= 5) {
+                timerDiv.classList.add('timer-warning');
+            } else {
+                timerDiv.classList.remove('timer-warning');
+            }
+        }
     }
 
     /**
