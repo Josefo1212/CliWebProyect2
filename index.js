@@ -31,7 +31,7 @@ async function fetchCategoriesFromAPI() {
 
 async function fillCategorySelect() {
     const categories = await fetchCategoriesFromAPI();
-    const topCategories = categories.slice(0, 5);
+    const topCategories = categories.slice(0,5);
     // Elimina las opciones previas excepto "Mixtas"
     while (categorySelect.options.length > 1) {
         categorySelect.remove(1);

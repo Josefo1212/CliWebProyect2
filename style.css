@@ -108,6 +108,9 @@ h1 {
     color: #f5e9d6;
     transition: border 0.2s, background 0.2s;
 }
+#inputs input[type="number"] {
+    width: 180px;
+}
 #inputs input:focus {
     border: none;
     outline: none;
@@ -161,6 +164,13 @@ h1 {
     box-shadow: 0 4px 16px #d7263140, 0 0 16px #bfa04655 inset;
     transform: scale(1.04);
 }
+#questions button:hover:not(:disabled) {
+    background: #d72631;
+    border: none;
+    color: #fff !important;
+    transform: scale(1.03);
+    text-shadow: 0 1px 8px #222, 0 0 2px #000;
+}
 .hide,
 .hidden {
     display: none !important;
@@ -196,11 +206,13 @@ h1 {
     letter-spacing: 1px;
     box-shadow: 0 2px 8px #00000030;
 }
+
 #questions button:hover:not(:disabled) {
     background: #d72631;
     border: none;
-    color: #fff !important;
+    color: #bfa046 !important;
     transform: scale(1.03);
+    text-shadow: 0 1px 8px #222, 0 0 2px #000;
 }
 #questions button:disabled {
     opacity: 0.7;
